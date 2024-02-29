@@ -29,4 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
       resultDiv.innerHTML = '<p>El reconocimiento de voz no es compatible con este navegador.</p>';
     }
   });
+
+  //probando un cambio
   
