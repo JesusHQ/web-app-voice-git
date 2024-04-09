@@ -1,6 +1,3 @@
-
-Aquí tienes la documentación correspondiente para la funcionalidad de la aplicación web que permite controlar el entorno mediante comandos de voz:
-
 Control por Voz: Guía del Usuario
 La aplicación web está equipada con capacidades de control por voz que te permiten realizar acciones específicas utilizando comandos de voz. A continuación, se detallan las acciones disponibles y los comandos de voz asociados para que puedas interactuar con la aplicación de manera eficiente.
 
