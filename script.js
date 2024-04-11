@@ -1,21 +1,16 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const startBtn = document.getElementById('start-btn');
   const resultDiv = document.getElementById('result');
   const textElement = document.getElementById('text');
   let fontSize = 16; // Tamaño de letra inicial
 
   if ('webkitSpeechRecognition' in window) {
-    const recognition = new webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    let recognition = new webkitSpeechRecognition();
+    recognition.continuous = true; // Configurar para que siga escuchando continuamente
+
     recognition.lang = 'es-ES';
 
-    startBtn.addEventListener('click', function () {
-      recognition.start();
-    });
-
     recognition.onresult = function (event) {
-      const transcript = event.results[0][0].transcript.toLowerCase();
+      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase(); // Obtener el último resultado
       resultDiv.innerHTML = `
         <h3>Texto Reconocido:</h3>
         <p>${transcript}</p>
@@ -82,8 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
       resultDiv.innerHTML = '<p>Ocurrió un error durante el reconocimiento de voz.</p>';
       console.error('Error en el reconocimiento de voz:', event.error);
     };
+
+    recognition.start(); // Iniciar el reconocimiento al cargar la página
   } else {
-    startBtn.style.display = 'none';
     resultDiv.innerHTML = '<p>El reconocimiento de voz no es compatible con este navegador.</p>';
     console.error('Reconocimiento de voz no compatible');
   }
@@ -122,3 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+
+
+//servinterval -- estaa funcion tiene 2 parametros, uno es el nombre de la funcion y el otro es el tiempo (en milisegundos)
+//quitar el boton, el navegador siempre debe de estar escuchando
