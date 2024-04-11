@@ -1,16 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
+  const startBtn = document.getElementById('start-btn');
   const resultDiv = document.getElementById('result');
   const textElement = document.getElementById('text');
   let fontSize = 16; // Tamaño de letra inicial
 
   if ('webkitSpeechRecognition' in window) {
-    let recognition = new webkitSpeechRecognition();
-    recognition.continuous = true; // Configurar para que siga escuchando continuamente
-
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
     recognition.lang = 'es-ES';
 
     recognition.onresult = function (event) {
-      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase(); // Obtener el último resultado
+      const transcript = event.results[0][0].transcript.toLowerCase();
       resultDiv.innerHTML = `
         <h3>Texto Reconocido:</h3>
         <p>${transcript}</p>
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       // Ejecutar acciones según el comando de voz para el navegador
-      if (transcript.includes('abrir pestaña')) {
+      if (transcript.includes('abrir una pestaña')) {
         window.open('', '_blank');
         console.log('Se abrió una nueva pestaña');
       } else if (transcript.includes('ir a')) {
@@ -78,8 +79,11 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('Error en el reconocimiento de voz:', event.error);
     };
 
-    recognition.start(); // Iniciar el reconocimiento al cargar la página
+    startBtn.addEventListener('click', function () {
+      recognition.start();
+    });
   } else {
+    startBtn.style.display = 'none';
     resultDiv.innerHTML = '<p>El reconocimiento de voz no es compatible con este navegador.</p>';
     console.error('Reconocimiento de voz no compatible');
   }
@@ -94,30 +98,53 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Función para guardar la orden en el MockAPI
-  function saveOrderToMockAPI(order) {
-    const url = 'https://6614d3aa2fc47b4cf27d2632.mockapi.io/datos'; // URL de MockAPI
-    const data = {
-      orden: order
-    };
+  function saveOrderToMockAPI(transcript) {
+    // Lista de palabras clave que representan órdenes válidas
+    const commands = [
+      'aumentar tamaño',
+      'disminuir tamaño',
+      'cambiar color a rojo',
+      'cambiar color a verde',
+      'cambiar color a azul',
+      'abrir una pestaña',
+      'ir a',
+      'cerrar pestaña',
+      'cerrar navegador',
+      'maximizar ventana',
+      'minimizar ventana'
+    ];
 
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Error al guardar la orden en el MockAPI');
-      }
-      console.log('Orden guardada correctamente en el MockAPI');
-    })
-    .catch(error => {
-      console.error('Error:', error.message);
-    });
+    // Buscar la primera palabra clave que coincida con la transcripción
+    const command = commands.find(cmd => transcript.includes(cmd));
+    
+    if (command) {
+      const url = 'https://6614d3aa2fc47b4cf27d2632.mockapi.io/datos'; // URL de MockAPI
+      const data = {
+        orden: command
+      };
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al guardar la orden en el MockAPI');
+        }
+        console.log('Orden guardada correctamente en el MockAPI');
+      })
+      .catch(error => {
+        console.error('Error:', error.message);
+      });
+    } else {
+      console.log('No se encontró una orden válida en la transcripción:', transcript);
+    }
   }
 });
+
 
 
 //servinterval -- estaa funcion tiene 2 parametros, uno es el nombre de la funcion y el otro es el tiempo (en milisegundos)
